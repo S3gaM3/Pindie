@@ -1,53 +1,73 @@
-const getData = async url => {
+const getJWTFromCookie = () => {
+  const cookie = document.cookie
+    .split(";")
+    .find(cookie => cookie.trim().startsWith("jwt="));
+  return cookie ? cookie.split("=")[1] : null;
+};
+
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Что-то пошло не так");
+  }
+  return response.json();
+};
+
+const getData = async (url) => {
   try {
     const response = await fetch(url);
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error(err);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(error);
   }
 };
 
 const postData = async (url, data) => {
+  const jwt = getJWTFromCookie();
   try {
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: jwt && `Bearer ${jwt}`,
+      },
+      body: JSON.stringify(data),
     });
-    if (response.status !== 200) {
-      throw new Error((await response.json()).message);
-    }
-    return response;
-  } catch (err) {
-    return err;
+    return handleResponse(response);
+  } catch (error) {
+    console.error(error);
   }
 };
 
 const putData = async (url, data) => {
+  const jwt = getJWTFromCookie();
   try {
     const response = await fetch(url, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: jwt && `Bearer ${jwt}`,
+      },
+      body: JSON.stringify(data),
     });
-    if (response.status !== 200) {
-      throw new Error((await response.json()).message);
-    }
-    return response;
-  } catch (err) {
-    return err;
+    return handleResponse(response);
+  } catch (error) {
+    console.error(error);
   }
 };
 
-const deleteData = async url => {
+const deleteData = async (url) => {
+  const jwt = getJWTFromCookie();
   try {
     const response = await fetch(url, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: {
+        Authorization: jwt && `Bearer ${jwt}`,
+      },
     });
-    return response;
-  } catch (err) {
-    console.error(err);
+    return handleResponse(response);
+  } catch (error) {
+    console.error(error);
   }
 };
 

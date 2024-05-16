@@ -23,10 +23,34 @@ const sendUserUpdated = (req, res) => {
   res.end({ message: "User updated" });
 };
 
+const findAllUsers = async (req, res, next) => {
+  console.log("GET /api/users");
+  req.usersArray = await users.find({}, { password: 0 });
+  next();
+};
+
+const findUserById = async (req, res, next) => {
+  console.log("GET /api/users/:id");
+  try {
+    req.user = await users.findById(req.params.id, { password: 0 });
+    next();
+  } catch (error) {
+    res.status(404).send("User not found");
+  }
+};
+
+const sendMe = (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(req.user));
+};
+
 module.exports = {
   sendAllUsers,
   sendUserCreated,
   sendUserById,
   sendUserDeleted,
-  sendUserUpdated
+  sendUserUpdated,
+  findAllUsers,
+  findUserById,
+  sendMe
 };

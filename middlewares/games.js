@@ -2,14 +2,18 @@
 const games = require("../models/game");
 
 const findAllGames = async (req, res, next) => {
-  req.gamesArray = await games
-    .find({})
-    .populate("categories")
-    .populate({
-      path: "users",
-      select: "-password"
-    });
-  next();
+  try {
+    req.gamesArray = await games
+      .find({})
+      .populate("categories")
+      .populate({
+        path: "users",
+        select: "-password"
+      });
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 const createGame = async (req, res, next) => {
@@ -17,7 +21,7 @@ const createGame = async (req, res, next) => {
     req.game = await games.create(req.body);
     next();
   } catch (error) {
-    res.status(400).send(JSON.stringify({ message: "Ошибка создания игры" }));
+    res.status(400).send({ message: "Ошибка создания игры" });
   }
 };
 
@@ -54,7 +58,7 @@ const deleteGame = async (req, res, next) => {
 const checkEmptyFields = (req, res, next) => {
   const { title, description, image, link, developer } = req.body;
   if (!title || !description || !image || !link || !developer) {
-    res.status(400).send(JSON.stringify({ message: "Заполните все поля" }));
+    res.status(400).send({ message: "Заполните все поля" });
   } else {
     next();
   }
@@ -64,18 +68,18 @@ const checkIsGameExists = async (req, res, next) => {
   try {
     const isInArray = await games.exists({ title: req.body.title });
     if (isInArray) {
-      res.status(400).send(JSON.stringify({ message: "Игра с таким названием уже существует" }));
+      res.status(400).send({ message: "Игра с таким названием уже существует" });
     } else {
       next();
     }
   } catch (error) {
-    res.status(500).send(JSON.stringify({ message: "Ошибка проверки существования игры" }));
+    res.status(500).send({ message: "Ошибка проверки существования игры" });
   }
 };
 
 const checkIfCategoriesAvaliable = (req, res, next) => {
   if (!req.body.categories || req.body.categories.length === 0) {
-    res.status(400).send(JSON.stringify({ message: "Выберите хотя бы одну категорию" }));
+    res.status(400).send({ message: "Выберите хотя бы одну категорию" });
   } else {
     next();
   }
@@ -87,8 +91,15 @@ const checkIfUsersAreSafe = (req, res, next) => {
   } else if (req.body.users.length - 1 === req.game.users.length) {
     next();
   } else {
-    res.status(400).send(JSON.stringify({ message: "Нельзя удалять пользователей или добавлять больше одного пользователя" }));
+    res.status(400).send({ message: "Нельзя удалять пользователей или добавлять больше одного пользователя" });
   }
+};
+
+const checkIsVoteRequest = async (req, res, next) => {
+  if (Object.keys(req.body).length === 1 && req.body.users) {
+    req.isVoteRequest = true;
+  }
+  next();
 };
 
 module.exports = {
@@ -100,5 +111,6 @@ module.exports = {
   checkEmptyFields,
   checkIsGameExists,
   checkIfCategoriesAvaliable,
-  checkIfUsersAreSafe
+  checkIfUsersAreSafe,
+  checkIsVoteRequest
 };

@@ -1,4 +1,3 @@
-// routes/categories.js
 const express = require('express');
 const categoriesRouter = express.Router();
 const { findAllCategories, createCategory, findCategoryById, deleteCategory, checkEmptyName, checkIsCategoryExists } = require('../middlewares/categories');

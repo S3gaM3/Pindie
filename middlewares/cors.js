@@ -14,6 +14,8 @@ function cors(req, res, next) {
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       // Если метод запроса - OPTIONS, завершаем обработку здесь
       if (req.method === 'OPTIONS') {
+        res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+        res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
         return res.sendStatus(200);
       }
     }
@@ -21,8 +23,4 @@ function cors(req, res, next) {
   next();
 }
 
-  
-  
-  
-  module.exports = cors;
-  
+module.exports = cors;
