@@ -13,18 +13,15 @@ form &&
         method: "POST",
         body: JSON.stringify(Object.fromEntries(formData)),
       });
-      if (!response.ok) {
-        throw new Error("Ошибка аутентификации");
+      if (response.status !== 200) {
+        throw new Error((await response.json()).message);
       }
       const result = await response.json();
       document.cookie = `jwt=${result.jwt}`;
       window.location.href = "/admin/dashboard";
     } catch (error) {
-      if (error instanceof TypeError) {
-        showTooltip("Ошибка сети. Пожалуйста, проверьте ваше подключение к интернету.");
-      } else {
-        showTooltip(error.message);
-      }
+      showTooltip(error.message);
+      return error;
     }
   });
 

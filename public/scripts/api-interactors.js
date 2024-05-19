@@ -5,20 +5,13 @@ const getJWTFromCookie = () => {
   return cookie ? cookie.split("=")[1] : null;
 };
 
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Что-то пошло не так");
-  }
-  return response.json();
-};
-
-const getData = async (url) => {
+const getData = async url => {
   try {
     const response = await fetch(url);
-    return handleResponse(response);
-  } catch (error) {
-    console.error(error);
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -29,13 +22,16 @@ const postData = async (url, data) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: jwt && `Bearer ${jwt}`,
+        Authorization: jwt && `Bearer ${jwt}`
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
-    return handleResponse(response);
-  } catch (error) {
-    console.error(error);
+    if (response.status !== 200) {
+      throw new Error((await response.json()).message);
+    }
+    return response;
+  } catch (err) {
+    return err;
   }
 };
 
@@ -46,28 +42,32 @@ const putData = async (url, data) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: jwt && `Bearer ${jwt}`,
+        Authorization: jwt && `Bearer ${jwt}`
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(data)
     });
-    return handleResponse(response);
-  } catch (error) {
-    console.error(error);
+    if (response.status !== 200) {
+      throw new Error((await response.json()).message);
+    }
+    return response;
+  } catch (err) {
+    return err;
   }
 };
 
-const deleteData = async (url) => {
+const deleteData = async url => {
   const jwt = getJWTFromCookie();
   try {
     const response = await fetch(url, {
-      method: "DELETE",
       headers: {
-        Authorization: jwt && `Bearer ${jwt}`,
+        "Content-Type": "application/json",
+        Authorization: jwt && `Bearer ${jwt}`
       },
+      method: "DELETE"
     });
-    return handleResponse(response);
-  } catch (error) {
-    console.error(error);
+    return response;
+  } catch (err) {
+    console.error(err);
   }
 };
 
