@@ -1,10 +1,6 @@
 // middlewares/categories.js
-const categories = require('../models/category');
 
-const findAllCategories = async (req, res, next) => {
-    req.categoriesArray = await categories.find({});
-    next();
-}
+const categories = require("../models/category");
 
 const createCategory = async (req, res, next) => {
   try {
@@ -12,8 +8,16 @@ const createCategory = async (req, res, next) => {
     next();
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
-    res.status(400).send(JSON.stringify({ message: "Ошибка создания категории" }));
+    res
+      .status(400)
+      .send(JSON.stringify({ message: "Ошибка создания категории" }));
   }
+};
+
+const findAllCategories = async (req, res, next) => {
+  req.categoriesArray = await categories.find({});
+
+  next();
 };
 
 const findCategoryById = async (req, res, next) => {
@@ -26,45 +30,64 @@ const findCategoryById = async (req, res, next) => {
   }
 };
 
+const updateCategory = async (req, res, next) => {
+  try {
+    req.category = await categories.findByIdAndUpdate(req.params.id, req.body);
+    next();
+  } catch (error) {
+    res.status(400).send({ message: "Ошибка обновления категории" });
+  }
+};
+
 const deleteCategory = async (req, res, next) => {
   try {
     req.category = await categories.findByIdAndDelete(req.params.id);
     next();
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
-    res.status(400).send(JSON.stringify({ message: "Ошибка удаления категории" }));
+    res
+      .status(400)
+      .send(JSON.stringify({ message: "Ошибка удаления категории" }));
   }
 };
 
-const checkEmptyName = (req, res, next) => {
+const checkEmptyName = async (req, res, next) => {
   if (!req.body.name) {
     res.setHeader("Content-Type", "application/json");
-    res.status(400).send(JSON.stringify({ message: "Введите название категории" }));
+    res
+      .status(400)
+      .send(JSON.stringify({ message: "Введите название категории" }));
   } else {
     next();
   }
 };
 
 const checkIsCategoryExists = async (req, res, next) => {
-  try {
-    const isInArray = await categories.exists({ name: req.body.name });
-    if (isInArray) {
-      res.setHeader("Content-Type", "application/json");
-      res.status(400).send(JSON.stringify({ message: "Категория с таким названием уже существует" }));
-    } else {
-      next();
-    }
-  } catch (error) {
+  const isInArray = req.categoriesArray.find((category) => {
+    return (
+      req.body.name === category.name &&
+      category._id.toString() !== req.params.id
+    );
+  });
+
+  if (isInArray) {
     res.setHeader("Content-Type", "application/json");
-    res.status(500).send(JSON.stringify({ message: "Ошибка проверки существования категории" }));
+    res.status(400).send(
+      JSON.stringify({
+        message: "Категория с таким названием уже существует",
+      }),
+    );
+  } else {
+    next();
   }
 };
 
 module.exports = {
-  findAllCategories,
   createCategory,
+  findAllCategories,
   findCategoryById,
+  updateCategory,
   deleteCategory,
   checkEmptyName,
-  checkIsCategoryExists
+  checkIsCategoryExists,
 };
