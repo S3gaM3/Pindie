@@ -2,7 +2,7 @@ import { showTooltip } from "./dom-creators.js";
 
 const form = document.querySelector(".auth-form");
 form &&
-  form.addEventListener("submit", async event => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
     try {
@@ -18,7 +18,7 @@ form &&
       }
       const result = await response.json();
       document.cookie = `jwt=${result.jwt}`;
-      window.location.href = "/admin/dashboard";
+      window.location.href = "/admin";
     } catch (error) {
       showTooltip(error.message);
       return error;

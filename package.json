@@ -1,22 +1,22 @@
 {
-  "name": "backend-pindie-week-5",
+  "name": "pindieadmin",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon npm app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "ITQ",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
-    "express": "^4.18.3",
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.2.1",
+    "mongoose": "^8.3.4"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.0"
   }
 }
