@@ -1,12 +1,49 @@
-// Создаём роут для запросов пользователей 
-const usersRouter = require('express').Router();
+// routes/users.js
 
-// Импортируем вспомогательные функции
-const findAllUsers = require('../middlewares/users');
-const sendAllUsers = require('../controllers/users');
+const usersRouter = require("express").Router();
 
-// Обрабатываем GET-запрос с роутом '/users'
-usersRouter.get('/categories', findAllUsers, sendAllUsers);
+const { Authorize } = require("../middlewares/auth.js");
 
-// Экспортируем роут для использования в приложении — app.js
+const {
+  createUser,
+  findAllUsers,
+  findUserById,
+  updateUser,
+  deleteUser,
+  hashPassword,
+  checkEmptyNameAndEmailAndPassword,
+  checkEmptyNameAndEmail,
+  checkIsUserExists,
+} = require("../middlewares/users");
+const {
+  sendUserCreated,
+  sendAllUsers,
+  sendUserById,
+  sendUserUpdated,
+  sendUserDeleted,
+} = require("../controllers/users");
+
+usersRouter.post(
+  "/users",
+  Authorize,
+  checkEmptyNameAndEmailAndPassword,
+  findAllUsers,
+  checkIsUserExists,
+  hashPassword,
+  createUser,
+  sendUserCreated,
+);
+usersRouter.get("/users", findAllUsers, sendAllUsers);
+usersRouter.get("/users/:id", findUserById, sendUserById);
+usersRouter.put(
+  "/users/:id",
+  Authorize,
+  checkEmptyNameAndEmail,
+  findAllUsers,
+  checkIsUserExists,
+  updateUser,
+  sendUserUpdated,
+);
+usersRouter.delete("/users/:id", Authorize, deleteUser, sendUserDeleted);
+
 module.exports = usersRouter;
