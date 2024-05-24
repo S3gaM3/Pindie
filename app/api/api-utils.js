@@ -16,13 +16,12 @@ export const isResponseOk = (response) => {
 };
 
 const normalizeDataObject = (obj) => {
-  return {
-    ...obj,
-    category: obj.categories,
-    users: obj.users_permissions_users,
-  };
-};
-
+  let str = JSON.stringify(obj)
+  str = str.replaceAll('_id', 'id');
+  const newObj = JSON.parse(str)
+  const result = { ...newObj, category: newObj.categories }
+  return result;
+}
 export const normalizeData = (data) => {
   return data.map((item) => normalizeDataObject(item));
 };
@@ -33,8 +32,13 @@ export const getNormalizedGameDataById = async (url, id) => {
 };
 
 export const getNormalizedGamesDataByCategory = async (url, category) => {
-  const data = await getData(`${url}?categories.name=${category}`);
-  return isResponseOk(data) ? normalizeData(data) : data;
+  try {
+    const data = await getData(`${url}?categories.name=${category}`);
+    return data.length > 0 ? (isResponseOk(data) ? normalizeData(data) : data) : []; // Если массив не пустой, выполнить нормализацию данных, иначе вернуть пустой массив
+  } catch (error) {
+    console.error("Ошибка при получении данных:", error);
+    return []; // В случае ошибки также возвращаем пустой массив
+  }
 };
 
 export const authorize = async (url, data) => {
@@ -97,7 +101,7 @@ export const vote = async (url, jwt, usersArray) => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwt}`,
       },
-      body: JSON.stringify({ users_permissions_users: usersArray }),
+      body: JSON.stringify({ users: usersArray })
     });
     if (!response.ok) {
       throw new Error('Ошибка голосования');

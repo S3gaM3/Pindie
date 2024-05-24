@@ -1,14 +1,3 @@
-"use client";
-
-import Swiper from "swiper";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import { useEffect } from "react";
-import { Card } from "../Card/Card";
-import Styles from "./CardsSlider.module.css";
-import Link from "next/link";
-
 export const CardsSlider = (props) => {
   useEffect(() => {
     const options = {
@@ -45,6 +34,12 @@ export const CardsSlider = (props) => {
     };
     new Swiper(".swiper", options);
   }, []);
+
+  // Проверяем, что props.data определен и является массивом
+  if (!Array.isArray(props.data) || props.data.length === 0) {
+    return null; // Возвращаем null, если данные не определены или пусты
+  }
+
   return (
     <div className={`swiper ${Styles["slider"]}`}>
       <ul className={`swiper-wrapper ${Styles["slider-wrapper"]}`}>
