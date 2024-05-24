@@ -1,14 +1,14 @@
-// routes/api.js
-const express = require('express');
-const router = express.Router();
-const authRouter = require('./auth');
-const categoriesRouter = require('./categories');
-const gamesRouter = require('./games');
-const usersRouter = require('./users');
+const gamesRouter = require("./games");
+const usersRouter = require("./users");
+const categoriesRouter = require("./categories");
+const authRouter = require("./auth");
 
-router.use('/users', usersRouter);
-router.use('/games', gamesRouter);
-router.use('/categories', categoriesRouter);
-router.use('/auth', authRouter);
 
-module.exports = router;
+const apiRouter = require("express").Router();
+
+apiRouter.use("/api", gamesRouter);
+apiRouter.use("/api", usersRouter);
+apiRouter.use("/api", categoriesRouter);
+apiRouter.use("/api", authRouter);
+
+module.exports = apiRouter; 

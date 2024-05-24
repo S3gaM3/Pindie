@@ -1,10 +1,10 @@
 import {
   addPutCategoryListeners,
-  removePutCategoryListeners,
+  removePutCategoryListeners
 } from "./requests.js";
 
 export const currentCategoryState = {
-  name: "",
+  name: ""
 };
 
 export let categoriesEditModeOn = false;
@@ -19,44 +19,44 @@ const useCategoryState = () => {
   return { setCurrentCategoryState, setCategoriesEditModeOn };
 };
 
-const useEditableCategoryElementsState = (categoryId) => {
+const useEditableCategoryElementsState = categoryId => {
   const targetElementsState = [
     {
       name: "name",
       element: document.querySelector(`#category-${categoryId} .name`),
       canEditText: true,
       canSetTransparency: true,
-      canSetVisibility: false,
-    },
+      canSetVisibility: false
+    }
   ];
   return targetElementsState;
 };
 
-export const fillCategoriesStateFromPage = (categoryId) => {
+export const fillCategoriesStateFromPage = categoryId => {
   const { setCurrentCategoryState } = useCategoryState();
   setCurrentCategoryState(
     "name",
-    document.querySelector(`#category-${categoryId} .name`).textContent,
+    document.querySelector(`#category-${categoryId} .name`).textContent
   );
 };
 
-export const fillCategoriesStateFromForm = (categoryId) => {
+export const fillCategoriesStateFromForm = categoryId => {
   const { setCurrentCategoryState } = useCategoryState();
   setCurrentCategoryState(
     "name",
-    document.querySelector(`#category-${categoryId} .name`).textContent,
+    document.querySelector(`#category-${categoryId} .name`).textContent
   );
 };
 
 const changeTargetElementsStyle = (targetElementsState, state) => {
   if (state) {
-    targetElementsState.forEach((element) => {
+    targetElementsState.forEach(element => {
       element.element.contentEditable = element.canEditText;
       element.element.style.opacity = element.canSetTransparency ? ".5" : "1";
       element.element.focus();
     });
   } else {
-    targetElementsState.forEach((element) => {
+    targetElementsState.forEach(element => {
       element.element.contentEditable = !element.canEditText;
       element.element.style.opacity = element.canSetTransparency ? "1" : ".5";
     });
@@ -66,7 +66,7 @@ const changeTargetElementsStyle = (targetElementsState, state) => {
 const blurElements = (categoryId, state) => {
   const categoriesCards = [...document.querySelectorAll(".category-list-item")];
   if (state) {
-    categoriesCards.forEach((card) => {
+    categoriesCards.forEach(card => {
       if (card.id !== `category-${categoryId}`) {
         card.style.filter = "blur(10px)";
         card.style.pointerEvents = "none";
@@ -80,7 +80,7 @@ const blurElements = (categoryId, state) => {
       }
     });
   } else {
-    categoriesCards.forEach((card) => {
+    categoriesCards.forEach(card => {
       if (card.id !== `category-${categoryId}`) {
         card.style.filter = "none";
         card.style.pointerEvents = "initial";
@@ -99,20 +99,20 @@ const blurElements = (categoryId, state) => {
 const setButtonStyle = (categoryId, state) => {
   if (state) {
     document.querySelector(
-      `#category-${categoryId} .edit-category-button svg use`,
+      `#category-${categoryId} .edit-category-button svg use`
     ).href.baseVal = "/svg/icons.svg#save";
     document.querySelector(
-      `#category-${categoryId} .edit-category-button .visually-hidden`,
+      `#category-${categoryId} .edit-category-button .visually-hidden`
     ).textContent = "Сохранить";
     document.querySelector(
-      `#category-${categoryId} .edit-category-button svg`,
+      `#category-${categoryId} .edit-category-button svg`
     ).style.stroke = "lightgreen";
   } else {
     document.querySelector(
-      `#category-${categoryId} .edit-category-button svg use`,
+      `#category-${categoryId} .edit-category-button svg use`
     ).href.baseVal = "/svg/icons.svg#edit";
     document.querySelector(
-      `#category-${categoryId} .edit-category-button .visually-hidden`,
+      `#category-${categoryId} .edit-category-button .visually-hidden`
     ).textContent = "Редактировать";
     document
       .querySelector(`#category-${categoryId} .edit-category-button svg`)
@@ -131,7 +131,7 @@ const setCloseButtonStyleAndListeners = (categoryId, state) => {
       addCategoriesEditModeListeners();
     };
     document.querySelector(
-      `#category-${categoryId} .close-item`,
+      `#category-${categoryId} .close-item`
     ).style.display = "block";
     document
       .querySelector(`#category-${categoryId} .close-item`)
@@ -167,9 +167,9 @@ function handleButtonClick(event) {
   fillCategoriesStateFromPage(categoryId);
   changeCategoryEditMode(categoryId, true);
   const categoryButtons = [
-    ...document.querySelectorAll(".edit-category-button"),
+    ...document.querySelectorAll(".edit-category-button")
   ];
-  categoryButtons.forEach((button) => {
+  categoryButtons.forEach(button => {
     button.removeEventListener("click", handleButtonClick);
   });
   addPutCategoryListeners();
@@ -177,9 +177,9 @@ function handleButtonClick(event) {
 
 export const addCategoriesEditModeListeners = () => {
   const categoryButtons = [
-    ...document.querySelectorAll(".edit-category-button"),
+    ...document.querySelectorAll(".edit-category-button")
   ];
-  categoryButtons.forEach((button) => {
+  categoryButtons.forEach(button => {
     button.addEventListener("click", handleButtonClick);
   });
 };
