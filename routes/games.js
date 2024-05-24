@@ -1,58 +1,34 @@
-// routes/games.js
-
 const gamesRouter = require("express").Router();
-
-const { Authorize } = require("../middlewares/auth");
-
-const {
-  createGame,
-  findAllGames,
-  findGameById,
-  updateGame,
-  deleteGame,
-  checkEmptyFields,
-  checkIfUsersAreSafe,
-  checkIfCategoriesAvaliable,
-  checkIsGameExists,
-  checkIsVoteRequest,
-  checkIsGameNameUnique, // добавляем импорт для checkIsGameNameUnique
-} = require("../middlewares/games");
-
-const {
-  sendGameCreated,
-  sendAllGames,
-  sendGameById,
-  sendGameUpdated,
-  sendGameDeleted,
-} = require("../controllers/games");
-
-gamesRouter.post(
-  "/games",
-  Authorize,
-  checkEmptyFields,
-  checkIfCategoriesAvaliable,
-  checkIsGameNameUnique, // добавляем проверку уникальности при создании
-  createGame,
-  sendGameCreated,
-);
+const { checkAuth, findAllGames, createGame, findGameById, updateGame, deleteGame, checkEmptyFields, checkIfCategoriesAvaliable, checkIfUsersAreSafe, checkIsGameExists, checkIsVoteRequest } = require("../middlewares");
+const { sendAllGames, sendGameCreated, sendGameById, sendGameUpdated, sendGameDeleted } = require("../controllers");
 
 gamesRouter.get("/games", findAllGames, sendAllGames);
 
-gamesRouter.get("/games/:id", findGameById, sendGameById);
+gamesRouter.get("/games/:id", findGameById, sendGameById); 
 
-gamesRouter.put(
-  "/games/:id",
-  Authorize,
-  findGameById,
-  checkIsVoteRequest, // добавляем checkIsVoteRequest здесь
-  checkEmptyFields,
-  checkIfUsersAreSafe,
-  checkIfCategoriesAvaliable,
-  checkIsGameNameUnique, // добавляем проверку уникальности при обновлении
-  updateGame,
-  sendGameUpdated,
-);
+gamesRouter.delete("/games/:id", checkAuth, deleteGame, sendGameDeleted);
 
-gamesRouter.delete("/games/:id", Authorize, deleteGame, sendGameDeleted);
+gamesRouter.post(
+    "/games",
+    findAllGames,
+    checkIsGameExists,
+    checkIfCategoriesAvaliable,
+    checkEmptyFields,
+    checkAuth,
+    createGame,
+    sendGameCreated
+  );
+  
+  gamesRouter.put(
+    "/games/:id",
+    findGameById,
+    checkIsVoteRequest,
+    checkIfUsersAreSafe,
+    checkIfCategoriesAvaliable,
+    checkEmptyFields,
+    checkAuth,
+    updateGame,
+    sendGameUpdated
+  );
 
 module.exports = gamesRouter;

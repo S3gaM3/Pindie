@@ -1,20 +1,20 @@
-// middlewares/cors.js
-const { CORS } = require("../config");
+const allowedCors = [
+  'https://practicum.yandex.ru',
+  'https://students-projects.ru',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://s3ga-front.nomoredomainswork.ru'
+];
 
 function cors(req, res, next) {
   const { origin } = req.headers;
-
-  if (CORS.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(200);
-    }
+  
+  if (allowedCors.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
   }
-
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
+  
   next();
-}
-
-module.exports = { cors };
+} 
+module.exports = cors;

@@ -1,34 +1,39 @@
-// controllers/users.js
+function sendAllUsers(req, res) {
+  res.header("Content-Type", "application/json");
+  res.send(JSON.stringify(req.usersArray));
+}
+
+function sendUserById(req, res) {
+  res.header("Content-Type", "application/json");
+  res.send(JSON.stringify(req.user));
+}
+
+function sendUserUpdated(req, res) {
+  res.header("Content-Type", "application/json");
+  res.status(200).send(JSON.stringify({ message: "Пользователь обновлён" }));
+}
 
 const sendUserCreated = (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(req.user));
-};
-
-const sendAllUsers = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(req.usersArray));
-};
-
-const sendUserById = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(req.user));
-};
-
-const sendUserUpdated = (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({ message: "Пользователь обновлён" }));
+  const { password,  ...userWithoutPassword} = req.user.toObject();
+  res.end(JSON.stringify(userWithoutPassword));
 };
 
 const sendUserDeleted = (req, res) => {
+  res.header("Content-Type", "application/json");
+  res.status(200).send({ message: "Пользователь успешно удалён" });
+}
+
+const sendMe = (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.end(JSON.stringify(req.user));
-};
+}; 
 
-module.exports = {
+module.exports = { 
+  sendAllUsers, 
   sendUserCreated,
-  sendAllUsers,
   sendUserById,
   sendUserUpdated,
   sendUserDeleted,
+  sendMe
 };

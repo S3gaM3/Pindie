@@ -1,38 +1,32 @@
-// middlewares/auth.js
+const jwt = require("jsonwebtoken")
 
-const jwt = require("jsonwebtoken");
-
-const users = require("../models/user");
-
-const { SECRET_KEY } = require("../config");
-
-const Authorize = async (req, res, next) => {
-  let token;
-
-  const { authorization } = req.headers;
-
-  if (authorization && authorization.startsWith("Bearer ")) {
-    token = authorization.replace("Bearer ", "");
-  } else {
-    token = req.cookies.jwt;
-  }
-
-  if (!token) {
-    return res.status(401).send({ message: "Необходима авторизация" });
-  }
-
-  try {
-    req.token = await jwt.verify(token, SECRET_KEY);
-    req.user = await users.findById(req.token._id, { password: 0 });
-    
-    if (!req.user) {
+const checkAuth = (req, res, next) => {
+    const { authorization } = req.headers;
+  
+    if (!authorization || !authorization.startsWith("Bearer ")) {
       return res.status(401).send({ message: "Необходима авторизация" });
     }
-  } catch (err) {
-    return res.status(401).send({ message: "Необходима авторизация" });
-  }
-
-  next();
+  
+    const token = authorization.replace("Bearer ", "");
+  
+    try {
+      req.user = jwt.verify(token, "some-secret-key");
+    } catch (err) {
+      return res.status(401).send({ message: "Необходима авторизация" });
+    }
+  
+    next();
 };
 
-module.exports = { Authorize };
+const checkCookiesJWT = (req, res, next) => {
+  if (!req.cookies.jwt) {
+    return res.redirect("/");
+  }
+  req.headers.authorization = `Bearer ${req.cookies.jwt}`;
+  next();
+}; 
+
+module.exports = {
+    checkAuth,
+    checkCookiesJWT
+}
