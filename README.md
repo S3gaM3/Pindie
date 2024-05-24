@@ -1,4 +1,3 @@
-
 Ссылка на репозиторий с фронтендом: https://github.com/S3gaM3/pindie-front
 
 Ссылка на домен фронтенда: https://s3ga-front.nomoredomainswork.ru/

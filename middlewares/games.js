@@ -46,7 +46,7 @@ const findGameById = async (req, res, next) => {
 
 const updateGame = async (req, res, next) => {
   try {
-    req.game = await games.findByIdAndUpdate(req.params.id, req.body);
+    req.game = await games.findByIdAndUpdate(req.params.id, req.body, { new: true });
     next();
   } catch (error) {
     res.status(400).send({ message: "Ошибка обновления игры" });
@@ -63,6 +63,11 @@ const deleteGame = async (req, res, next) => {
 };
 
 const checkEmptyFields = async (req, res, next) => {
+  if (req.isVoteRequest) {
+    next();
+    return;
+  }
+
   if (
     !req.body.title ||
     !req.body.description ||
@@ -97,6 +102,11 @@ const checkIfUsersAreSafe = async (req, res, next) => {
 };
 
 const checkIfCategoriesAvaliable = async (req, res, next) => {
+  if (req.isVoteRequest) {
+    next();
+    return;
+  }
+
   if (!req.body.categories || req.body.categories.length === 0) {
     res.setHeader("Content-Type", "application/json");
     res
@@ -110,7 +120,7 @@ const checkIfCategoriesAvaliable = async (req, res, next) => {
 const checkIsGameExists = async (req, res, next) => {
   const isInArray = req.gamesArray.find((game) => {
     return (
-      req.body.title === game.titlev && game._id.toString() !== req.params.id
+      req.body.title === game.title && game._id.toString() !== req.params.id
     );
   });
 
@@ -126,6 +136,22 @@ const checkIsGameExists = async (req, res, next) => {
   }
 };
 
+const checkIsVoteRequest = async (req, res, next) => {
+  if (Object.keys(req.body).length === 1 && req.body.users) {
+    req.isVoteRequest = true;
+  }
+  next();
+};
+
+const checkIsGameNameUnique = async (req, res, next) => {
+  const game = await games.findOne({ title: req.body.title });
+  if (game && game._id.toString() !== req.params.id) {
+    res.status(400).send({ message: "Игра с таким названием уже существует" });
+  } else {
+    next();
+  }
+};
+
 module.exports = {
   createGame,
   findAllGames,
@@ -136,4 +162,6 @@ module.exports = {
   checkIfUsersAreSafe,
   checkIfCategoriesAvaliable,
   checkIsGameExists,
+  checkIsVoteRequest,
+  checkIsGameNameUnique, // добавляем экспорт checkIsGameNameUnique
 };
