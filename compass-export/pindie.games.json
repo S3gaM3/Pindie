@@ -1,25 +1,5 @@
 [{
   "_id": {
-    "$oid": "663507120d3a6d0b8011cd9e"
-  },
-  "title": "G.U.N.N.E.R",
-  "description": "Продержись как можно дольше, отбиваясь от врагов, которых будет становиться всё больше",
-  "developer": "IDKWIAm",
-  "image": "https://code.s3.yandex.net/teens/pindie-games/gunner/cover.png",
-  "link": "https://code.s3.yandex.net/teens/pindie-games/gunner/game/index.html",
-  "categories": [
-    {
-      "$oid": "66290ddad9e3b4a65e0677c0"
-    }
-  ],
-  "users": [
-    {
-      "$oid": "664753b2c2799e92a73c9429"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "66001dcb912e93034cf26a59"
   },
   "title": "Crystal Keeper",
